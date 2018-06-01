@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -12,65 +11,40 @@ namespace MyWebsite
 {
     public class Startup
     {
-        public Startup()
-        {
-            Program.Output("Startup Constructor - Called");
-        }
-
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            Program.Output("Startup.ConfigureServices - Called");
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        // public void Configure(IApplicationBuilder app, IHostingEnvironment env)
-        // {
-        //     if (env.IsDevelopment())
-        //     {
-        //         app.UseDeveloperExceptionPage();
-        //     }
-
-        //     app.Run(async (context) =>
-        //     {
-        //         await context.Response.WriteAsync("Hello World!");
-        //     });
-        // }
-        
-        public void Configure(IApplicationBuilder app, IApplicationLifetime appLifetime)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            appLifetime.ApplicationStarted.Register(() =>
+            app.Use(async (context, next) =>
             {
-                Program.Output("ApplicationLifetime - Started");
+                await context.Response.WriteAsync("First Middleware in. \r\n");
+                await next.Invoke();
+                await context.Response.WriteAsync("First Middleware out. \r\n");
             });
 
-            appLifetime.ApplicationStopping.Register(() =>
+            app.Use(async (context, next) =>
             {
-                Program.Output("ApplicationLifetime - Stopping");
+                await context.Response.WriteAsync("Second Middleware in. \r\n");
+                await next.Invoke();
+                await context.Response.WriteAsync("Second Middleware out. \r\n");
             });
 
-            appLifetime.ApplicationStopped.Register(() =>
+            app.Use(async (context, next) =>
             {
-                Thread.Sleep(5 * 1000);
-                Program.Output("ApplicationLifetime - Stopped");
+                await context.Response.WriteAsync("Third Middleware in. \r\n");
+                await next.Invoke();
+                await context.Response.WriteAsync("Third Middleware out. \r\n");
             });
 
             app.Run(async (context) =>
             {
-                await context.Response.WriteAsync("Hello World!");
+                await context.Response.WriteAsync("Hello World! \r\n");
             });
-
-            // For trigger stop WebHost
-            var thread = new Thread(new ThreadStart(() =>
-            {
-                Thread.Sleep(5 * 1000);
-                Program.Output("Trigger stop WebHost");
-                appLifetime.StopApplication();
-            }));
-            thread.Start();
-
-            Program.Output("Startup.Configure - Called");
         }
     }
 }
