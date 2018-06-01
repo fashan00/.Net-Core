@@ -30,7 +30,12 @@ namespace MyWebsite
             app.Use(async (context, next) =>
             {
                 await context.Response.WriteAsync("Second Middleware in. \r\n");
-                await next.Invoke();
+                // 水管阻塞，封包不往後送
+                var condition = false;
+                if (condition)
+                {
+                    await next.Invoke();
+                }
                 await context.Response.WriteAsync("Second Middleware out. \r\n");
             });
 
