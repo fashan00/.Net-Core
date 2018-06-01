@@ -27,26 +27,21 @@ namespace MyWebsite
                 await context.Response.WriteAsync("First Middleware out. \r\n");
             });
 
-            app.Use(async (context, next) =>
+            app.Map("/second", mapApp =>
             {
-                await context.Response.WriteAsync("Second Middleware in. \r\n");
-                // 水管阻塞，封包不往後送
-                var condition = false;
-                if (condition)
+                mapApp.Use(async (context, next) =>
                 {
+                    await context.Response.WriteAsync("Second Middleware in. \r\n");
                     await next.Invoke();
-                }
-                await context.Response.WriteAsync("Second Middleware out. \r\n");
+                    await context.Response.WriteAsync("Second Middleware out. \r\n");
+                });
+                mapApp.Run(async context =>
+                {
+                    await context.Response.WriteAsync("Second. \r\n");
+                });
             });
 
-            app.Use(async (context, next) =>
-            {
-                await context.Response.WriteAsync("Third Middleware in. \r\n");
-                await next.Invoke();
-                await context.Response.WriteAsync("Third Middleware out. \r\n");
-            });
-
-            app.Run(async (context) =>
+            app.Run(async context =>
             {
                 await context.Response.WriteAsync("Hello World! \r\n");
             });
