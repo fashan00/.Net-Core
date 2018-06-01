@@ -20,26 +20,7 @@ namespace MyWebsite
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            app.Use(async (context, next) =>
-            {
-                await context.Response.WriteAsync("First Middleware in. \r\n");
-                await next.Invoke();
-                await context.Response.WriteAsync("First Middleware out. \r\n");
-            });
-
-            app.Map("/second", mapApp =>
-            {
-                mapApp.Use(async (context, next) =>
-                {
-                    await context.Response.WriteAsync("Second Middleware in. \r\n");
-                    await next.Invoke();
-                    await context.Response.WriteAsync("Second Middleware out. \r\n");
-                });
-                mapApp.Run(async context =>
-                {
-                    await context.Response.WriteAsync("Second. \r\n");
-                });
-            });
+            app.UseMiddleware<FirstMiddleware>();
 
             app.Run(async context =>
             {
