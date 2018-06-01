@@ -1,24 +1,33 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace MyWebAPI.Controllers
-{
-    [Route("api/[controller]")]
-    public class HomeController : Controller
-    {
-        private readonly ISample _sample;
+namespace MyWebAPI.Controllers {
+    [Route ("api/[controller]")]
+    public class HomeController : Controller {
+        private readonly ISample _transient;
+        private readonly ISample _scoped;
+        private readonly ISample _singleton;
 
-        public HomeController(ISample sample)
-        {
-            _sample = sample;
+        public HomeController (
+            ISampleTransient transient,
+            ISampleScoped scoped,
+            ISampleSingleton singleton) {
+            _transient = transient;
+            _scoped = scoped;
+            _singleton = singleton;
         }
 
         [HttpGet]
-        [Route("index")]
-        public string Index() {
-            return $"[ISample]\r\n"
-                 + $"Id: {_sample.Id}\r\n"
-                + $"HashCode: {_sample.GetHashCode()}\r\n"
-                + $"Tpye: {_sample.GetType()}";
+        [Route ("index")]
+        public IActionResult Index () {
+            ViewBag.TransientId = _transient.Id;
+            ViewBag.TransientHashCode = _transient.GetHashCode ();
+
+            ViewBag.ScopedId = _scoped.Id;
+            ViewBag.ScopedHashCode = _scoped.GetHashCode ();
+
+            ViewBag.SingletonId = _singleton.Id;
+            ViewBag.SingletonHashCode = _singleton.GetHashCode ();
+            return View ();
         }
     }
 }
