@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,18 +25,18 @@ namespace MyMVC {
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure (IApplicationBuilder app, IHostingEnvironment env) {
 
-            // URL Rewrite: 
-            // http://localhost:5000/about.aspx
-            // URL Redirect: 
-            // http://localhost:5000/first
-            // http://localhost:5000/api.aspx/p123
-            // http://localhost:5000/api/one/two/three
-            var rewrite = new RewriteOptions ()
-                .AddRewrite ("about.aspx", "home/about", skipRemainingRules : true)
-                .AddRedirect ("first", "home/index", 301)
-                .AddRedirect ("api.aspx/(.*)", "home/api1/$1", 301)
-                .AddRedirect ("api/(.*)/(.*)/(.*)", "home/api2?p1=$1&p2=$2&p3=$3", 301);
-            app.UseRewriter (rewrite);
+            app.Run (async (context) => {
+                string message;
+
+                if (!context.Request.Cookies.TryGetValue ("Sample", out message)) {
+                    message = "Save data to cookies.";
+                }
+                context.Response.Cookies.Append ("Sample", "This is Cookies.");
+                // 刪除 Cookies 資料
+                //context.Response.Cookies.Delete("Sample");
+
+                await context.Response.WriteAsync ($"{message}");
+            });
 
             if (env.IsDevelopment ()) {
                 app.UseDeveloperExceptionPage ();
