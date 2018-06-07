@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -22,6 +23,20 @@ namespace MyMVC {
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure (IApplicationBuilder app, IHostingEnvironment env) {
+
+            // URL Rewrite: 
+            // http://localhost:5000/about.aspx
+            // URL Redirect: 
+            // http://localhost:5000/first
+            // http://localhost:5000/api.aspx/p123
+            // http://localhost:5000/api/one/two/three
+            var rewrite = new RewriteOptions ()
+                .AddRewrite ("about.aspx", "home/about", skipRemainingRules : true)
+                .AddRedirect ("first", "home/index", 301)
+                .AddRedirect ("api.aspx/(.*)", "home/api1/$1", 301)
+                .AddRedirect ("api/(.*)/(.*)/(.*)", "home/api2?p1=$1&p2=$2&p3=$3", 301);
+            app.UseRewriter (rewrite);
+
             if (env.IsDevelopment ()) {
                 app.UseDeveloperExceptionPage ();
             } else {
@@ -30,25 +45,10 @@ namespace MyMVC {
 
             app.UseStaticFiles ();
 
-            // http://localhost:5000 會對應到 HomeController 的 Index()。
-            // http://localhost:5000/about 會對應到 HomeController 的 About()。
-            // http://localhost:5000/home/test 會對應到 HomeController 的 Test()。
             app.UseMvc (routes => {
                 routes.MapRoute (
-                    name: "about",
-                    template: "about",
-                    defaults : new { controller = "Home", action = "About" }
-                );
-                routes.MapRoute (
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}"
-                );
-                // 跟上面設定的 default 效果一樣
-                //routes.MapRoute(
-                //    name: "default",
-                //    template: "{controller}/{action}/{id?}",
-                //    defaults: new { controller = "Home", action = "Index" }
-                //);
+                    template: "{controller=Home}/{action=Index}/{id?}");
             });
         }
     }

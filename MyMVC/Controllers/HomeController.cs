@@ -44,5 +44,15 @@ namespace MyMVC.Controllers {
         public string Test () {
             return "Hello Test";
         }
+
+        [HttpGet ("home/api1/{p1}")]
+        public string api1 (string p1) {
+            return p1;
+        }
+
+        public string api2 (string p1, string p2, string p3) {
+            return $"p1={p1}, p2={p2}, p3={p3}";
+        }
+
     }
 }
