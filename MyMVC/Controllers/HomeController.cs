@@ -36,5 +36,13 @@ namespace MyMVC.Controllers {
             var user = new UserModel ();
             return View (model: user);
         }
+
+        public string About () {
+            return "Hello About";
+        }
+
+        public string Test () {
+            return "Hello Test";
+        }
     }
 }
