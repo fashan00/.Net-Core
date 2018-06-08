@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using MyMVC.Models;
+using MyWebsite.Extensions;
 
 namespace MyMVC {
     public class Startup {
@@ -20,23 +22,39 @@ namespace MyMVC {
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices (IServiceCollection services) {
             services.AddMvc ();
+
+            // 將 Session 存在 ASP.NET Core 記憶體中
+            services.AddDistributedMemoryCache ();
+            services.AddSession (
+                // 設定Session安全性
+                options => {
+                    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                    options.Cookie.Name = "mywebsite";
+                    options.IdleTimeout = TimeSpan.FromMinutes (5);
+                }
+            );
+
+            // DI 容器中加入 IHttpContextAccessor 及 ISessionWapper
+            // ASP.NET Core 實作了 IHttpContextAccessor，讓 HttpContext 可以輕鬆的注入給需要用到的物件使用。
+            // 由於 IHttpContextAccessor 只是取用 HttpContext 實例的接口，用 Singleton 的方式就可以供其它物件使用。
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor> ();
+            services.AddSingleton<ISessionWapper, SessionWapper> ();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure (IApplicationBuilder app, IHostingEnvironment env) {
 
+            // SessionMiddleware 加入 Pipeline
+            app.UseSession ();
+            // Sample Session
+            /*
             app.Run (async (context) => {
-                string message;
 
-                if (!context.Request.Cookies.TryGetValue ("Sample", out message)) {
-                    message = "Save data to cookies.";
-                }
-                context.Response.Cookies.Append ("Sample", "This is Cookies.");
-                // 刪除 Cookies 資料
-                //context.Response.Cookies.Delete("Sample");
-
+                context.Session.SetString ("Sample", "This is Session.");
+                string message = context.Session.GetString ("Sample");
                 await context.Response.WriteAsync ($"{message}");
             });
+            */
 
             if (env.IsDevelopment ()) {
                 app.UseDeveloperExceptionPage ();
