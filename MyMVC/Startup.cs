@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MyMVC.Models;
 using MyWebsite.Extensions;
+using Newtonsoft.Json.Serialization;
 
 namespace MyMVC {
     public class Startup {
@@ -21,7 +22,14 @@ namespace MyMVC {
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices (IServiceCollection services) {
-            services.AddMvc ();
+            services.AddMvc ()
+                .AddJsonOptions (options => {
+                    // DefaultContractResolver 名稱是延續 ASP.NET，雖然名稱叫 Default，但在 ASP.NET Core 它不是 Default。
+                    // CamelCasePropertyNamesContractResolver 才是 ASP.NET Core 的 Default ContractResolver。
+                    options.SerializerSettings.ContractResolver = new DefaultContractResolver ();
+                    // Ignore Null
+                    options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
+                });
 
             // 將 Session 存在 ASP.NET Core 記憶體中
             services.AddDistributedMemoryCache ();
