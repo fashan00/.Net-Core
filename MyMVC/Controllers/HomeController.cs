@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 using MyMVC.Models;
 
 namespace MyMVC.Controllers {
-    [Route ("[controller]")]
+    [Route ("api/[controller]")]
     public class HomeController : Controller {
 
         private readonly ISessionWapper _sessionWapper;
@@ -22,6 +22,7 @@ namespace MyMVC.Controllers {
             };
         }
 
+        [HttpGet]
         [Route ("Index")]
         public IActionResult Index () {
             var user = _sessionWapper.User;
@@ -29,8 +30,9 @@ namespace MyMVC.Controllers {
             return Ok (user);
         }
 
-        [HttpGet ("api1")]
+        [HttpGet]
         [Route ("api1/{p1}")]
+        [Route ("api1")]
         public string api1 (string p1) {
             return p1;
         }

@@ -10,6 +10,11 @@ namespace MyWebsite.Controllers {
     public class UserController : Controller {
         private static List<UserModel> _users = new List<UserModel> ();
 
+        /// <summary>
+        /// 查詢使用者清單
+        /// </summary>
+        /// <param name="q">查詢使用者名稱</param>
+        /// <returns>使用者清單</returns>
         [HttpGet]
         public ResultModel Get (string q) {
             var result = new ResultModel ();
