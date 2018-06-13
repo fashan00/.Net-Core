@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.PlatformAbstractions;
 using MyMVC.Models;
 using MyWebsite.Extensions;
+using MyWebsite.Filters;
 using Newtonsoft.Json.Serialization;
 using Swashbuckle.AspNetCore.Swagger;
 
@@ -25,7 +26,15 @@ namespace MyMVC {
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices (IServiceCollection services) {
-            services.AddMvc ()
+            services.AddMvc (
+                    //全域註冊
+                    config => {
+                        config.Filters.Add (new ResultFilter ());
+                        config.Filters.Add (new ExceptionFilter ());
+                        config.Filters.Add (new ResourceFilter ());
+                        config.Filters.Add (new ActionFilter () { Name = "Global", Order = 3 });
+                    }
+                )
                 .AddJsonOptions (options => {
                     // DefaultContractResolver 名稱是延續 ASP.NET，雖然名稱叫 Default，但在 ASP.NET Core 它不是 Default。
                     // CamelCasePropertyNamesContractResolver 才是 ASP.NET Core 的 Default ContractResolver。
@@ -34,22 +43,22 @@ namespace MyMVC {
                     options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
                 });
 
-            // 將 Session 存在 ASP.NET Core 記憶體中
-            services.AddDistributedMemoryCache ();
-            services.AddSession (
-                // 設定Session安全性
-                options => {
-                    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-                    options.Cookie.Name = "mywebsite";
-                    options.IdleTimeout = TimeSpan.FromMinutes (5);
-                }
-            );
+            // // 將 Session 存在 ASP.NET Core 記憶體中
+            // services.AddDistributedMemoryCache ();
+            // services.AddSession (
+            //     // 設定Session安全性
+            //     options => {
+            //         options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+            //         options.Cookie.Name = "mywebsite";
+            //         options.IdleTimeout = TimeSpan.FromMinutes (5);
+            //     }
+            // );
 
-            // DI 容器中加入 IHttpContextAccessor 及 ISessionWapper
-            // ASP.NET Core 實作了 IHttpContextAccessor，讓 HttpContext 可以輕鬆的注入給需要用到的物件使用。
-            // 由於 IHttpContextAccessor 只是取用 HttpContext 實例的接口，用 Singleton 的方式就可以供其它物件使用。
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor> ();
-            services.AddSingleton<ISessionWapper, SessionWapper> ();
+            // // DI 容器中加入 IHttpContextAccessor 及 ISessionWapper
+            // // ASP.NET Core 實作了 IHttpContextAccessor，讓 HttpContext 可以輕鬆的注入給需要用到的物件使用。
+            // // 由於 IHttpContextAccessor 只是取用 HttpContext 實例的接口，用 Singleton 的方式就可以供其它物件使用。
+            // services.AddSingleton<IHttpContextAccessor, HttpContextAccessor> ();
+            // services.AddSingleton<ISessionWapper, SessionWapper> ();
 
             services.AddSwaggerGen (c => {
                 c.SwaggerDoc (
@@ -81,7 +90,7 @@ namespace MyMVC {
         public void Configure (IApplicationBuilder app, IHostingEnvironment env) {
 
             // SessionMiddleware 加入 Pipeline
-            app.UseSession ();
+            // app.UseSession ();
 
             app.UseSwagger ();
             app.UseSwaggerUI (c => {
