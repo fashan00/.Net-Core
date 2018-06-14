@@ -24,6 +24,7 @@ namespace MyMVC.Controllers {
             throw new System.Exception ("This is exception sample from Index().");
         }
 
+        [HttpGet]
         [Route ("/api/test")]
         public string Test () {
             throw new System.Exception ("This is exception sample from Test().");
