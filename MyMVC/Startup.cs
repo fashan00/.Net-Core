@@ -28,6 +28,7 @@ namespace MyMVC {
 
             services.AddMvc ();
 
+            #region  AddSwaggerGen
             services.AddSwaggerGen (c => {
                 c.SwaggerDoc (
                     // name: 攸關 SwaggerDocument 的 URL 位置。
@@ -53,10 +54,29 @@ namespace MyMVC {
                 c.IncludeXmlComments (filePath);
             });
 
+            #endregion
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure (IApplicationBuilder app, IHostingEnvironment env) {
+
+            env.EnvironmentName = "Production";
+            // env.EnvironmentName = EnvironmentName.Development;
+
+            if (env.IsDevelopment ()) {
+                // Do something...
+            } else if (env.IsEnvironment ("production")) { // 忽略大小寫
+                // Do something...
+            }
+
+            // app.Run (async (context) => {
+            //     await context.Response.WriteAsync (
+            //         $"EnvironmentName: {env.EnvironmentName}\r\n" +
+            //         $"This is production environment: {env.IsEnvironment("production")}");
+            // });
+
+            #region  Exception Handler
 
             // 1. 指派錯誤頁面
             app.UseExceptionHandler ("/Home/Error");
@@ -87,6 +107,9 @@ namespace MyMVC {
             // 把 ExceptionMiddleware 註冊在越外層，能涵蓋的範圍就越多。
             // app.UseMiddleware<ExceptionMiddleware> ();
 
+            #endregion
+
+            #region UseSwagger
             app.UseSwagger ();
             app.UseSwaggerUI (c => {
                 c.SwaggerEndpoint (
@@ -97,6 +120,8 @@ namespace MyMVC {
                 );
                 c.RoutePrefix = string.Empty;
             });
+            #endregion
+
             app.UseStaticFiles ();
 
             app.UseMvc (routes => {

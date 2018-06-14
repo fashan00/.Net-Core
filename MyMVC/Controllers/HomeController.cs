@@ -30,6 +30,20 @@ namespace MyMVC.Controllers {
             _settings = settings.Value;
         }
 
+        [HttpGet ("MultipleEnvironments")]
+        public string MultipleEnvironments () {
+            // 弱型別
+            var DBConnectionString = _config["DBConnectionString"];
+            var subProperty1 = _config["CustomObject:Property:SubProperty1"];
+            var subProperty2 = _config["CustomObject:Property:SubProperty2"];
+            var subProperty3 = _config["CustomObject:Property:SubProperty3"];
+
+            return $"DBConnectionString({DBConnectionString.GetType()}): {DBConnectionString}\r\n" +
+                $"subProperty1({subProperty1.GetType()}): {subProperty1}\r\n" +
+                $"subProperty2({subProperty2.GetType()}): {subProperty2}\r\n" +
+                $"subProperty3({subProperty3.GetType()}): {subProperty3}\r\n";
+        }
+
         [HttpGet ("ConfigFromFile")]
         public string ConfigFromFile () {
             // 弱型別

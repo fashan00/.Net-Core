@@ -10,5 +10,6 @@
             "SubProperty2": true,
             "SubProperty3": "This is sub property."
         }
-    }
+    },
+    "DBConnectionString": "Server=(localdb)\\mssqllocaldb;Database=MyWebsite;"
 }

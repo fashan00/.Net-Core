@@ -16,25 +16,15 @@ namespace MyMVC {
 
         public static IWebHost BuildWebHost (string[] args) =>
             WebHost.CreateDefaultBuilder (args)
-            // 從檔案
+            // 當 settings.Production.json 載入後，就會把 settings.json 的 DBConnectionString 設定蓋掉，
+            // 而 settings.json 其它的設定依然能繼續使用。
+            // 因為設定 optional=false
             .ConfigureAppConfiguration ((hostContext, config) => {
                 var env = hostContext.HostingEnvironment;
                 config.SetBasePath (Path.Combine (env.ContentRootPath, "Configuration"))
-                    .AddJsonFile (path: "settings.json", optional : false, reloadOnChange : true);
+                    .AddJsonFile (path: "settings.json", optional : false, reloadOnChange : true)
+                    .AddJsonFile (path: $"settings.{env.EnvironmentName}.json", optional : true, reloadOnChange : true);
             })
-            // 從指令參數
-            .ConfigureAppConfiguration ((hostContext, config) => config.AddCommandLine (args))
-            // 從環境變數
-            .ConfigureAppConfiguration ((hostContext, config) => config.AddEnvironmentVariables ())
-            // 從記憶體物件(Hardcode)
-            .ConfigureAppConfiguration ((hostContext, config) => {
-                var dictionary = new Dictionary<string, string> { { "Site:Name", "John" },
-                { "Site:Domain", "blog" }
-                    };
-                config.AddInMemoryCollection (dictionary);
-            })
-            // 從自訂組態
-            .ConfigureAppConfiguration ((hostContext, config) => config.Add (new CustomConfigurationSource ()))
             .UseStartup<Startup> ()
             .Build ();
     }
