@@ -7,10 +7,12 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using NLog.Web;
 
 namespace MyMVC {
     public class Program {
         public static void Main (string[] args) {
+            NLogBuilder.ConfigureNLog ("nlog.config").GetCurrentClassLogger ();
             BuildWebHost (args).Run ();
         }
 
@@ -25,14 +27,15 @@ namespace MyMVC {
                     .AddJsonFile (path: "settings.json", optional : false, reloadOnChange : true)
                     .AddJsonFile (path: $"settings.{env.EnvironmentName}.json", optional : true, reloadOnChange : true);
             })
-            .ConfigureLogging ((hostContext, logging) => {
-                var env = hostContext.HostingEnvironment;
-                var configuration = new ConfigurationBuilder ()
-                    .SetBasePath (Path.Combine (env.ContentRootPath, "Configuration"))
-                    .AddJsonFile (path: "settings.json", optional : true, reloadOnChange : true)
-                    .Build ();
-                logging.AddConfiguration (configuration.GetSection ("Logging"));
-            })
+            // .ConfigureLogging ((hostContext, logging) => {
+            //     var env = hostContext.HostingEnvironment;
+            //     var configuration = new ConfigurationBuilder ()
+            //         .SetBasePath (Path.Combine (env.ContentRootPath, "Configuration"))
+            //         .AddJsonFile (path: "settings.json", optional : true, reloadOnChange : true)
+            //         .Build ();
+            //     logging.AddConfiguration (configuration.GetSection ("Logging"));
+            // })
+            .UseNLog ()
             .UseStartup<Startup> ()
             .Build ();
     }
