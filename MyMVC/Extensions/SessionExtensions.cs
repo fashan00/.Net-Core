@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 
-namespace MyWebsite.Extensions {
+namespace MyMVC.Extensions {
     public static class SessionExtensions {
         public static void SetObject<T> (this ISession session, string key, T value) {
             session.SetString (key, JsonConvert.SerializeObject (value));
