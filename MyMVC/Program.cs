@@ -25,6 +25,14 @@ namespace MyMVC {
                     .AddJsonFile (path: "settings.json", optional : false, reloadOnChange : true)
                     .AddJsonFile (path: $"settings.{env.EnvironmentName}.json", optional : true, reloadOnChange : true);
             })
+            .ConfigureLogging ((hostContext, logging) => {
+                var env = hostContext.HostingEnvironment;
+                var configuration = new ConfigurationBuilder ()
+                    .SetBasePath (Path.Combine (env.ContentRootPath, "Configuration"))
+                    .AddJsonFile (path: "settings.json", optional : true, reloadOnChange : true)
+                    .Build ();
+                logging.AddConfiguration (configuration.GetSection ("Logging"));
+            })
             .UseStartup<Startup> ()
             .Build ();
     }

@@ -24,10 +24,29 @@ namespace MyMVC.Controllers {
 
         private readonly IConfiguration _config;
         private readonly Settings _settings;
+        private readonly ILogger _logger;
 
-        public HomeController (IConfiguration config, IOptions<Settings> settings) {
+        public HomeController (IConfiguration config, IOptions<Settings> settings, ILogger<HomeController> logger) {
             _config = config;
             _settings = settings.Value;
+            _logger = logger;
+        }
+
+        [HttpGet ("Index")]
+        public string Index () {
+            // LogLevel = 0 (預設不輸出) 
+            _logger.LogTrace ("This trace log from Home.Index()");
+            // LogLevel = 1 (預設不輸出) 
+            _logger.LogDebug ("This debug log from Home.Index()");
+            // LogLevel = 2
+            _logger.LogInformation ("This information log from Home.Index()");
+            // LogLevel = 3
+            _logger.LogWarning ("This warning log from Home.Index()");
+            // LogLevel = 4
+            _logger.LogError ("This error log from Home.Index()");
+            // LogLevel = 5
+            _logger.LogCritical ("This critical log from Home.Index()");
+            return "Home.Index()";
         }
 
         [HttpGet ("MultipleEnvironments")]

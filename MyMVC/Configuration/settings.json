@@ -1,4 +1,14 @@
 {
+    "Logging": {
+        "LogLevel": {
+            "Default": "Debug",
+            // 當遇到 Log 來源的 namespace 是 MyMVC.Controllers 時，就會紀錄 Trace 以上層級的 Log
+            "MyMVC.Controllers": "Trace",
+            // 當遇到 Log 來源的 namespace 是 System 或 Microsoft 時，只紀錄 Error 以上層級的 Log
+            "System": "Error",
+            "Microsoft": "Error"
+        }
+    },
     "SupportedCultures": [
         "en-GB",
         "zh-TW",
