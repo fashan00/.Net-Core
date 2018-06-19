@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using MyWebsite.Attributes;
 
 namespace MyMVC.Models {
+    [Serializable]
     public class UserModel {
         [Required]
         public int Id { get; set; }

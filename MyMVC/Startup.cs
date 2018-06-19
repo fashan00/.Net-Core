@@ -26,8 +26,8 @@ namespace MyMVC {
 
             services.Configure<Settings> (Configuration);
 
-            // 本機快取
-            services.AddMemoryCache ();
+            // 分散式快取
+            services.AddDistributedMemoryCache ();
 
             services.AddMvc ();
 
