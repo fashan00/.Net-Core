@@ -26,6 +26,9 @@ namespace MyMVC {
 
             services.Configure<Settings> (Configuration);
 
+            // 本機快取
+            services.AddMemoryCache ();
+
             services.AddMvc ();
 
             #region  AddSwaggerGen
