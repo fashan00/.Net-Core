@@ -26,8 +26,6 @@ namespace MyMVC {
 
             services.Configure<Settings> (Configuration);
 
-            services.AddSignalR ();
-
             services.AddMvc ();
 
             #region  AddSwaggerGen
@@ -124,10 +122,7 @@ namespace MyMVC {
             // });
             // #endregion
 
-            app.UseDefaultFiles ();
             app.UseStaticFiles ();
-            app.UseWebSockets ();
-            app.UseSignalR ();
 
             app.UseMvc (routes => {
                 routes.MapRoute (

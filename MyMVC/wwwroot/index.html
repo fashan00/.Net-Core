@@ -3,51 +3,32 @@
 
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>ASP.NET Core SignalR Chat</title>
-    <script src="//ajax.aspnetcdn.com/ajax/jQuery/jquery-1.12.4.min.js"></script>
-    <script src="//ajax.aspnetcdn.com/ajax/signalr/jquery.signalr-2.2.2.min.js"></script>
+    <title>Upload File</title>
 </head>
 
 <body>
     <div>
-        <h1>Chat rooms</h1>
-        <div id="chat" style="height:300px; overflow-y: scroll;"></div>
-        <div>
-            <label>Name</label>
+        <label>Sample 1: Upload and Download</label>
+        <form method="post" enctype="multipart/form-data" action="/api/files">
+            <input type="file" name="files" multiple accept="image/*" />
             <br />
-            <input type="text" id="name" />
-        </div>
-        <div>
-            <label>Message</label>
-            <br />
-            <input type="text" id="message" />
-        </div>
-        <div>
-            <input type="button" value="Send" id="send" />
-            <input type="button" value="Clear" id="clear" />
-        </div>
+            <input type="submit" value="Upload" />
+        </form>
     </div>
-    <script>
-        $(function () {
-            var hubConnection = $.hubConnection();
-            var hubProxy = hubConnection.createHubProxy("chathub");
-            hubProxy.on("ServerMessage", function (data) {
-                $("#chat").append(data + "<br />");
-            });
-            hubConnection.start();
-
-            $(document).on("click", "#send", function () {
-                hubProxy.invoke("ClientMessage", {
-                    "name": $("#name").val(),
-                    "message": $("#message").val()
-                });
-            });
-
-            $(document).on("click", "#clear", function () {
-                $("#chat").html("");
-            });
-        });
-    </script>
+    <br />
+    <div>
+        <label>Sample 2: Streaming Upload and Download with Album </label>
+        <form method="post" enctype="multipart/form-data" action="/api/files/album">
+            Title:
+            <input type="text" name="title" />
+            <br /> Date:
+            <input type="date" name="date" />
+            <br /> photos:
+            <input type="file" name="photos" multiple accept="image/*" />
+            <br />
+            <input type="submit" value="Upload" />
+        </form>
+    </div>
 </body>
 
 </html>
