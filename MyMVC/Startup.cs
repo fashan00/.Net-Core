@@ -26,8 +26,7 @@ namespace MyMVC {
 
             services.Configure<Settings> (Configuration);
 
-            // 分散式快取
-            services.AddDistributedMemoryCache ();
+            services.AddSignalR ();
 
             services.AddMvc ();
 
@@ -112,20 +111,23 @@ namespace MyMVC {
 
             #endregion
 
-            #region UseSwagger
-            app.UseSwagger ();
-            app.UseSwaggerUI (c => {
-                c.SwaggerEndpoint (
-                    // url: 需配合 SwaggerDoc 的 name。 "/swagger/{SwaggerDoc name}/swagger.json"
-                    url: "/swagger/v1/swagger.json",
-                    // description: 用於 Swagger UI 右上角選擇不同版本的 SwaggerDocument 顯示名稱使用。
-                    name: "RESTful API v1.0.0"
-                );
-                c.RoutePrefix = string.Empty;
-            });
-            #endregion
+            // #region UseSwagger
+            // app.UseSwagger ();
+            // app.UseSwaggerUI (c => {
+            //     c.SwaggerEndpoint (
+            //         // url: 需配合 SwaggerDoc 的 name。 "/swagger/{SwaggerDoc name}/swagger.json"
+            //         url: "/swagger/v1/swagger.json",
+            //         // description: 用於 Swagger UI 右上角選擇不同版本的 SwaggerDocument 顯示名稱使用。
+            //         name: "RESTful API v1.0.0"
+            //     );
+            //     c.RoutePrefix = string.Empty;
+            // });
+            // #endregion
 
+            app.UseDefaultFiles ();
             app.UseStaticFiles ();
+            app.UseWebSockets ();
+            app.UseSignalR ();
 
             app.UseMvc (routes => {
                 routes.MapRoute (

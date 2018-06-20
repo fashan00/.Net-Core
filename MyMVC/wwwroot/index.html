@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>ASP.NET Core SignalR Chat</title>
+    <script src="//ajax.aspnetcdn.com/ajax/jQuery/jquery-1.12.4.min.js"></script>
+    <script src="//ajax.aspnetcdn.com/ajax/signalr/jquery.signalr-2.2.2.min.js"></script>
+</head>
+
+<body>
+    <div>
+        <h1>Chat rooms</h1>
+        <div id="chat" style="height:300px; overflow-y: scroll;"></div>
+        <div>
+            <label>Name</label>
+            <br />
+            <input type="text" id="name" />
+        </div>
+        <div>
+            <label>Message</label>
+            <br />
+            <input type="text" id="message" />
+        </div>
+        <div>
+            <input type="button" value="Send" id="send" />
+            <input type="button" value="Clear" id="clear" />
+        </div>
+    </div>
+    <script>
+        $(function () {
+            var hubConnection = $.hubConnection();
+            var hubProxy = hubConnection.createHubProxy("chathub");
+            hubProxy.on("ServerMessage", function (data) {
+                $("#chat").append(data + "<br />");
+            });
+            hubConnection.start();
+
+            $(document).on("click", "#send", function () {
+                hubProxy.invoke("ClientMessage", {
+                    "name": $("#name").val(),
+                    "message": $("#message").val()
+                });
+            });
+
+            $(document).on("click", "#clear", function () {
+                $("#chat").html("");
+            });
+        });
+    </script>
+</body>
+
+</html>
