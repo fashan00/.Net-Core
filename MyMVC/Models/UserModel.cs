@@ -1,10 +1,12 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using MyWebsite.Attributes;
 
 namespace MyMVC.Models {
     [Serializable]
     public class UserModel {
+        [Key, DatabaseGenerated (DatabaseGeneratedOption.Identity)]
         [Required]
         public int Id { get; set; }
 
@@ -21,8 +23,8 @@ namespace MyMVC.Models {
         [StringLength (200)]
         public string Address { get; set; }
 
-        [DataType (DataType.Date)]
-        [AgeCheck (18, 120)]
-        public DateTime BirthDate { get; set; }
+        // [DataType (DataType.Date)]
+        // [AgeCheck (18, 120)]
+        // public DateTime BirthDate { get; set; }
     }
 }

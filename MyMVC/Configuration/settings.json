@@ -21,5 +21,8 @@
             "SubProperty3": "This is sub property."
         }
     },
-    "DBConnectionString": "Server=(localdb)\\mssqllocaldb;Database=MyWebsite;"
+    "DBConnectionString": "Server=(localdb)\\mssqllocaldb;Database=MyWebsite;",
+    "ConnectionStrings": {
+        "DefaultConnection": "Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\10604308\\Desktop\\.Net Core\\DB\\Database.mdf;"
+    }
 }

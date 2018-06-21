@@ -7,10 +7,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.PlatformAbstractions;
+using MyMVC.Models;
 using MyWebsite.Filters;
+using MyWebsite.Repositories;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace MyMVC {
@@ -25,8 +28,12 @@ namespace MyMVC {
         public void ConfigureServices (IServiceCollection services) {
 
             services.Configure<Settings> (Configuration);
+            services.AddScoped<IRepository<UserModel, int>, UserRepository> ();
 
             services.AddMvc ();
+            services.AddDbContext<MyContext> (options => {
+                options.UseSqlServer (Configuration.GetConnectionString ("DefaultConnection"));
+            });
 
             #region  AddSwaggerGen
             services.AddSwaggerGen (c => {
@@ -59,7 +66,7 @@ namespace MyMVC {
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure (IApplicationBuilder app, IHostingEnvironment env) {
+        public void Configure (IApplicationBuilder app, IHostingEnvironment env, MyContext dbContext) {
 
             env.EnvironmentName = "Production";
             // env.EnvironmentName = EnvironmentName.Development;
@@ -109,26 +116,33 @@ namespace MyMVC {
 
             #endregion
 
-            // #region UseSwagger
-            // app.UseSwagger ();
-            // app.UseSwaggerUI (c => {
-            //     c.SwaggerEndpoint (
-            //         // url: 需配合 SwaggerDoc 的 name。 "/swagger/{SwaggerDoc name}/swagger.json"
-            //         url: "/swagger/v1/swagger.json",
-            //         // description: 用於 Swagger UI 右上角選擇不同版本的 SwaggerDocument 顯示名稱使用。
-            //         name: "RESTful API v1.0.0"
-            //     );
-            //     c.RoutePrefix = string.Empty;
-            // });
-            // #endregion
-
-            app.UseStaticFiles ();
-
-            app.UseMvc (routes => {
-                routes.MapRoute (
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+            #region UseSwagger
+            app.UseSwagger ();
+            app.UseSwaggerUI (c => {
+                c.SwaggerEndpoint (
+                    // url: 需配合 SwaggerDoc 的 name。 "/swagger/{SwaggerDoc name}/swagger.json"
+                    url: "/swagger/v1/swagger.json",
+                    // description: 用於 Swagger UI 右上角選擇不同版本的 SwaggerDocument 顯示名稱使用。
+                    name: "RESTful API v1.0.0"
+                );
+                c.RoutePrefix = string.Empty;
             });
+            #endregion
+
+            // app.UseStaticFiles ();
+
+            // app.UseMvc (routes => {
+            //     routes.MapRoute (
+            //         name: "default",
+            //         template: "{controller=Home}/{action=Index}/{id?}");
+            // });
+
+            // 檢查是否連線
+            bool exist = dbContext.Database.Exists ();
+            // 建立資料庫            
+            dbContext.Database.EnsureCreated ();
+
+            app.UseMvcWithDefaultRoute ();
         }
     }
 }
